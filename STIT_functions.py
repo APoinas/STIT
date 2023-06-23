@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import warnings
 
 class Polygon:
@@ -144,28 +143,3 @@ def STIT(Poly, Stop_Time, Max_iter=500):
             warnings.warn("Max iteration reached")
             break
     return List_Poly
-
-P = Polygon(np.array([[0, 1, 1, 0, 0], [0, 0, 1, 1, 0]]).T) # Créé un polygône à partir d'une matrice n x 2
-
-List_Poly = STIT(P, 10) # Simule le STIT dans le polygône P. Renvoie la liste des polygones de la tesselation
-
-# Tracé de la tesselation
-fig = plt.figure(figsize=(8, 8))
-ax = fig.add_subplot(111)
-for Poly in List_Poly:
-    ax.plot(Poly.Points[:, 0], Poly.Points[:, 1], color="black");
-xlim, ylim = P.Enclosing_Rectangle()
-ax.set_xlim(xlim)
-ax.set_ylim(ylim)
-ax.axis("off")
-ax.set_aspect("equal");
-
-############## Analyse a l'arrache ##############
-
-L = []
-for _ in range(1000):
-    p, ang = P.Simulate_Uniform()
-    P1, P2 = P.CutPoly(p, ang)
-    L += [(P1.Perimeter() + P2.Perimeter() - P.Perimeter())/2]
-np.mean(L)
-np.pi * P.Area()/P.Perimeter()
