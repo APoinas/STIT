@@ -1,17 +1,17 @@
 import numpy as np
-import warnings
+from warnings import warn
 
 class Polygon:
     """
     A class to represent 2D polygons
-    
+
     ...
-    
+
     Attributes
     ----------
     Points : numpy array
         A 2-dimensional array whose first and last row is identical representing the coordinates of each of its vertex.
-    
+
     Methods
     -------
     Enclosing_Rectangle():
@@ -27,7 +27,7 @@ class Polygon:
         N : int
             The number of vertices. Automatically calculated from the variable Points
         """
-        
+
         if Points.shape[1] != 2:
             raise ValueError("Points should be represented as an n x 2 array.")
 
@@ -67,12 +67,12 @@ class Polygon:
     def Area(self):
         """
         Returns the area of the polygon.
-        
+
         Returns
         -------
         area (float) : Area of the polygon
         """
-        
+
         P = self.Points
         x = P[:, 0]
         y = P[:, 1]
@@ -81,12 +81,12 @@ class Polygon:
     def Perimeter(self):
         """
         Returns the perimeter of the polygon.
-        
+
         Returns
         -------
         perimeter (float) : Perimeter of the polygon
         """
-        
+
         P = self.Points
         return np.sum(np.sqrt(np.sum((P - np.roll(P, 1, axis=0))**2, axis=1)))
 
@@ -103,13 +103,13 @@ class Polygon:
     def Enclosing_Rectangle(self):
         """
         Returns the coordinates of a rectangle enclosing the polygon
-        
+
         Returns
         -------
         x_coords (list of float) : x coordinates of the lower left and upper right point of a rectangle enclosing the polygon.
         y_coords (list of float) : y coordinates of the lower left and upper right point of a rectangle enclosing the polygon.
         """
-        
+
         P = self.Points
         xm = min(P[:, 0])
         ym = min(P[:, 1])
@@ -129,13 +129,13 @@ class Polygon:
     def Simulate_Uniform(self):
         """
         Simulate a line randomly chosen uniformly among the lines crossing the polygon.
-        
+
         Returns
         -------
         p (float) : Signed distance to the origin of the randomly chosen line
         theta (float) : Angle of the randomly chosen line
         """
-        
+
         boo = False
         Center, Radius = self.Enclosing_Circle()
         Poly = self - Center
@@ -157,7 +157,7 @@ class Polygon:
                 ind += [i]
                 cut_point += [[(1-t)*P[i, 0] + t*P[i+1, 0]], [(1-t)*P[i, 1] + t*P[i+1, 1]]]
         if len(ind) == 0:
-            warnings.warn("Couldn't cut the polygon in two")
+            warn("Couldn't cut the polygon in two")
             return Polygon(P)
         P1 = np.vstack((P[:(ind[0]+1),:], np.array(cut_point[0:2]).T, np.array(cut_point[2:4]).T, P[(ind[1]+1):, :]))
         P2 = np.vstack((np.array(cut_point[0:2]).T, P[(ind[0]+1):(ind[1]+1),:], np.array(cut_point[2:4]).T, np.array(cut_point[0:2]).T))
@@ -166,14 +166,14 @@ class Polygon:
 def nGone(n):
     '''
     Creates a regular n-gone with unit circumradius.
-    
+
             Parameters:
                     n (int): Number of vertex
-    
+
             Returns:
                     polygon (Polygon): Regular n-gone with unit circumradius
     '''
-    
+
     angle = 2 * np.pi * np.arange(n+1)/n
     P = np.array([np.cos(angle), np.sin(angle)])
     return Polygon(P.T)
@@ -189,13 +189,13 @@ def Intersec(P, p, ang):
 def STIT(Poly, Stop_Time, Max_iter=500):
     '''
     Returns a list of polygons corresponding to the simulation of a STIT random tesselation on a given polygon.
-    
+
             Parameters:
                     Poly (Polygon): A polygon
                     Stop_Time (float): The stopping time of the STIT algorithm
-                    Max_iter (int, optional): Maximum number of iterations of the STIT. If this number is reached, the algorithm stops 
+                    Max_iter (int, optional): Maximum number of iterations of the STIT. If this number is reached, the algorithm stops
                     even if the stopping time was not reached.
-                    
+
             Returns:
                     List_Polygon (list of Polygon): List of the polygons involved in the simulated tesselation
     '''
@@ -221,6 +221,6 @@ def STIT(Poly, Stop_Time, Max_iter=500):
         Clock += [np.random.exponential(1/per1), np.random.exponential(1/per2)]
         nb_iter += 1
         if nb_iter >= Max_iter:
-            warnings.warn("Max iteration reached")
+            warn("Max iteration reached")
             break
     return List_Poly
