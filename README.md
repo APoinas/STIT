@@ -32,7 +32,7 @@ STIT(Poly, Stop_Time, Max_iter=500, Dist="Side", p=1/2)
 
 ### VM
 
-The "VM" distribution correspond to a Von Mises distribution with parameters $\mu$ and $\kappa$ that does not have default values and have to be specified. The syntax is
+The "VM" distribution correspond to a Von Mises distribution moudlo $\pi$ with parameters $\mu$ and $\kappa$ that does not have default values and have to be specified. The syntax is
 ```
 STIT(Poly, Stop_Time, Max_iter=500, Dist="VM", mu=None, kappa=None)
 ```
@@ -45,6 +45,7 @@ The "Custom" distribution allows the user to use any custom distribution. A func
 ```
 STIT(Poly, Stop_Time, Max_iter=500, Dist="Custom", generator=None)
 ```
+Here is an example with a $0.3\delta_{\pi/2}+0.7\mathcal{U}([0, \pi[)$ distribution.
 
 <img src="Example pictures/Example4.png" alt="" width="300px"/>
 
