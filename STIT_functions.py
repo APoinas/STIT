@@ -1,7 +1,7 @@
 import numpy as np
 from warnings import warn
 
-def Random_Angle(Dist="Uniform", kappa=None, mu=None, p=0.5, generator=None):
+def Random_Angle(Dist="Uniform", p=0.5, mu=None, kappa=None, generator=None):
     if Dist == "Uniform":
         return np.random.uniform(0, np.pi)
     
@@ -145,13 +145,13 @@ class Polygon:
         Diam = np.sqrt((xM - xm)**2 + (yM - ym)**2)
         return np.array([(xM + xm)/2, (yM + ym)/2]), Diam/2
 
-    def Simulate_Uniform(self, Dist="Uniform", kappa=None, mu=None, p=0.5, generator=None):
+    def Simulate_Uniform(self, Dist="Uniform", p=0.5, mu=None, kappa=None, generator=None):
         """
         Simulate a line randomly chosen uniformly among the lines crossing the polygon.
 
         Returns
         -------
-        p (float) : Signed distance to the origin of the randomly chosen line
+        rho (float) : Signed distance to the origin of the randomly chosen line
         theta (float) : Angle of the randomly chosen line
         """
 
@@ -159,7 +159,7 @@ class Polygon:
         Center, Radius = self.Enclosing_Circle()
         Poly = self - Center
         while not boo:
-            angle = Random_Angle(Dist=Dist, kappa=kappa, mu=mu, p=p, generator=generator)
+            angle = Random_Angle(Dist=Dist, p=p, mu=mu, kappa=kappa, generator=generator)
             rho = np.random.uniform(-Radius, Radius)
             m, M = Poly.Boundary(angle)
             boo = m <= rho <= M
@@ -207,9 +207,9 @@ def Intersec(P, p, ang):
     if denominator != 0:
         return (p-ux*np.cos(ang)-uy*np.sin(ang))/denominator
     else:
-        return -100
+        return np.inf
 
-def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", kappa=None, mu=None, p=0.5, generator=None):
+def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", p=0.5, mu=None, kappa=None, generator=None):
     '''
     Returns a list of polygons corresponding to the simulation of a STIT random tesselation on a given polygon.
 
@@ -218,6 +218,11 @@ def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", kappa=None, mu=None, p=0
                     Stop_Time (float): The stopping time of the STIT algorithm
                     Max_iter (int, optional): Maximum number of iterations of the STIT. If this number is reached, the algorithm stops
                     even if the stopping time was not reached.
+                    Dist (str, optional): Distribution of the angle of the random lines. Should be either "Uniform", "Side", "VM" or "Custom".
+                    p (float, optional): Only used if Dist="Side". Probability that the angle is pi/2. By default, p=1/2.
+                    mu (float, optional): Needs to be specified if Dist="VM". Parameter mu of the Von Mises distribution.
+                    kappa (float, optional): Needs to be specified if Dist="VM". Parameter kappa of the Von Mises distribution.
+                    generator(function, optional): Needs to be specified if Dist="Custom". A function without parameter returning a random angle in [0, pi[.
 
             Returns:
                     List_Polygon (list of Polygon): List of the polygons involved in the simulated tesselation
@@ -234,7 +239,7 @@ def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", kappa=None, mu=None, p=0
         _ = List_Perimeter.pop(index)
         t = Clock.pop(index)
         Time += t
-        rho, ang = Q.Simulate_Uniform(Dist=Dist, kappa=kappa, mu=mu, p=p, generator=generator)
+        rho, ang = Q.Simulate_Uniform(Dist=Dist, p=p, mu=mu, kappa=kappa, generator=generator)
         P1, P2 = Q.CutPoly(rho, ang)
         per1 = P1.Perimeter()
         per2 = P2.Perimeter()
