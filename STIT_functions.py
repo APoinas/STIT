@@ -1,6 +1,14 @@
 import numpy as np
 from warnings import warn
 
+def Random_Angle(Dist="Uniform", kappa=None, mu=None, p=0.5):
+    if Dist == "Uniform":
+        return np.random.uniform(0, np.pi)
+    if Dist == "Side":
+        return np.pi * np.random.binomial(1, p) / 2
+    if Dist == "VM":
+        return np.mod(np.random.vonmises(mu, kappa), np.pi)
+
 class Polygon:
     """
     A class to represent 2D polygons
@@ -126,7 +134,7 @@ class Polygon:
         Diam = np.sqrt((xM - xm)**2 + (yM - ym)**2)
         return np.array([(xM + xm)/2, (yM + ym)/2]), Diam/2
 
-    def Simulate_Uniform(self):
+    def Simulate_Uniform(self, Dist="Uniform", kappa=None, mu=None, p=0.5):
         """
         Simulate a line randomly chosen uniformly among the lines crossing the polygon.
 
@@ -140,11 +148,11 @@ class Polygon:
         Center, Radius = self.Enclosing_Circle()
         Poly = self - Center
         while not boo:
-            angle = np.random.uniform(0, np.pi)
-            p = np.random.uniform(-Radius, Radius)
+            angle = Random_Angle(Dist=Dist, kappa=kappa, mu=mu, p=p)
+            rho = np.random.uniform(-Radius, Radius)
             m, M = Poly.Boundary(angle)
-            boo = m <= p <= M
-        return p + Center[0]*np.cos(angle) + Center[1]*np.sin(angle), angle
+            boo = m <= rho <= M
+        return rho + Center[0]*np.cos(angle) + Center[1]*np.sin(angle), angle
 
     def CutPoly(self, p, ang):
         P = self.Points
@@ -156,6 +164,7 @@ class Polygon:
             if 0 <= t <= 1:
                 ind += [i]
                 cut_point += [[(1-t)*P[i, 0] + t*P[i+1, 0]], [(1-t)*P[i, 1] + t*P[i+1, 1]]]
+
         if len(ind) == 0:
             warn("Couldn't cut the polygon in two")
             return Polygon(P)
@@ -183,10 +192,13 @@ def Intersec(P, p, ang):
     uy = P[0, 1]
     vx = P[1, 0]
     vy = P[1, 1]
-    t = (p-ux*np.cos(ang)-uy*np.sin(ang))/((vx-ux)*np.cos(ang)+(vy-uy)*np.sin(ang))
-    return t
+    denominator = (vx-ux)*np.cos(ang)+(vy-uy)*np.sin(ang)
+    if denominator != 0:
+        return (p-ux*np.cos(ang)-uy*np.sin(ang))/denominator
+    else:
+        return -100
 
-def STIT(Poly, Stop_Time, Max_iter=500):
+def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", kappa=None, mu=None, p=0.5):
     '''
     Returns a list of polygons corresponding to the simulation of a STIT random tesselation on a given polygon.
 
@@ -211,8 +223,8 @@ def STIT(Poly, Stop_Time, Max_iter=500):
         _ = List_Perimeter.pop(index)
         t = Clock.pop(index)
         Time += t
-        p, ang = Q.Simulate_Uniform()
-        P1, P2 = Q.CutPoly(p, ang)
+        rho, ang = Q.Simulate_Uniform(Dist=Dist, kappa=kappa, mu=mu, p=p)
+        P1, P2 = Q.CutPoly(rho, ang)
         per1 = P1.Perimeter()
         per2 = P2.Perimeter()
         List_Poly += [P1, P2]

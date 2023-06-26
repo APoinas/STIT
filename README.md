@@ -1,4 +1,4 @@
-<center><img src="Example.png" alt="" width="300px"/></center>
+<img src="Example.png" alt="" width="300px"/>
 
 # Simulation of STIT random tesselations
 
