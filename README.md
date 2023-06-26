@@ -36,6 +36,7 @@ The "VM" distribution correspond to a Von Mises distribution moudlo $\pi$ with p
 ```
 STIT(Poly, Stop_Time, Max_iter=500, Dist="VM", mu=None, kappa=None)
 ```
+Here is an example with a $\textnormal{VM}(\pi/6, 5)$ distribution:
 
 <img src="Example pictures/Example3.png" alt="" width="300px"/>
 
@@ -45,7 +46,7 @@ The "Custom" distribution allows the user to use any custom distribution. A func
 ```
 STIT(Poly, Stop_Time, Max_iter=500, Dist="Custom", generator=None)
 ```
-Here is an example with a $0.3\delta_{\pi/2}+0.7\mathcal{U}([0, \pi[)$ distribution.
+Here is an example with a $0.3\delta_{\pi/2}+0.7\mathcal{U}([0, \pi[)$ distribution:
 
 <img src="Example pictures/Example4.png" alt="" width="300px"/>
 
