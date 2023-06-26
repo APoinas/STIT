@@ -1,13 +1,24 @@
 import numpy as np
 from warnings import warn
 
-def Random_Angle(Dist="Uniform", kappa=None, mu=None, p=0.5):
+def Random_Angle(Dist="Uniform", kappa=None, mu=None, p=0.5, generator=None):
     if Dist == "Uniform":
         return np.random.uniform(0, np.pi)
+    
     if Dist == "Side":
         return np.pi * np.random.binomial(1, p) / 2
+    
     if Dist == "VM":
+        if kappa is None or mu is None:
+            raise ValueError("If Dist is VM then mu and kappa needs to be specified.")
         return np.mod(np.random.vonmises(mu, kappa), np.pi)
+    
+    if Dist == "Custom":
+        if generator is None:
+            raise ValueError("If Dist is Custom then a function generating the alea needs to be specified.")
+        return generator()
+    
+    raise ValueError("Dist should be either Uniform, Side, VM or Custom.")
 
 class Polygon:
     """
@@ -134,7 +145,7 @@ class Polygon:
         Diam = np.sqrt((xM - xm)**2 + (yM - ym)**2)
         return np.array([(xM + xm)/2, (yM + ym)/2]), Diam/2
 
-    def Simulate_Uniform(self, Dist="Uniform", kappa=None, mu=None, p=0.5):
+    def Simulate_Uniform(self, Dist="Uniform", kappa=None, mu=None, p=0.5, generator=None):
         """
         Simulate a line randomly chosen uniformly among the lines crossing the polygon.
 
@@ -148,7 +159,7 @@ class Polygon:
         Center, Radius = self.Enclosing_Circle()
         Poly = self - Center
         while not boo:
-            angle = Random_Angle(Dist=Dist, kappa=kappa, mu=mu, p=p)
+            angle = Random_Angle(Dist=Dist, kappa=kappa, mu=mu, p=p, generator=generator)
             rho = np.random.uniform(-Radius, Radius)
             m, M = Poly.Boundary(angle)
             boo = m <= rho <= M
@@ -198,7 +209,7 @@ def Intersec(P, p, ang):
     else:
         return -100
 
-def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", kappa=None, mu=None, p=0.5):
+def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", kappa=None, mu=None, p=0.5, generator=None):
     '''
     Returns a list of polygons corresponding to the simulation of a STIT random tesselation on a given polygon.
 
@@ -223,7 +234,7 @@ def STIT(Poly, Stop_Time, Max_iter=500, Dist="Uniform", kappa=None, mu=None, p=0
         _ = List_Perimeter.pop(index)
         t = Clock.pop(index)
         Time += t
-        rho, ang = Q.Simulate_Uniform(Dist=Dist, kappa=kappa, mu=mu, p=p)
+        rho, ang = Q.Simulate_Uniform(Dist=Dist, kappa=kappa, mu=mu, p=p, generator=generator)
         P1, P2 = Q.CutPoly(rho, ang)
         per1 = P1.Perimeter()
         per2 = P2.Perimeter()
