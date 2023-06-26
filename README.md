@@ -1,5 +1,3 @@
-<img src="Example pictures/Example.png" alt="" width="300px"/>
-
 # Simulation of STIT random tesselations
 
 Simulation of random tesselation **ST**able by **IT**eration introduced by Nagel and Weiss(2015)[[1]](#1). 
@@ -9,9 +7,15 @@ Simulation of random tesselation **ST**able by **IT**eration introduced by Nagel
 - numpy
 - warnings
 
-## Supported distributions
+## Supported distributions for angles
+
+The lines cuting the polygons are defined as
+$$D_{\rho, \theta}=\{(x,y)\in\R^2,~x\cos(\theta)+y\sin(\theta)=\rho\},~\rho\in\R,~\theta\in[0,\pi[.$$
+The parameter $\rho$ is always chosen uniformly but various distributions for $\theta$ are supported using the "Dist" parameter.
 
 ### Uniform
+
+The default distribution for $\theta$ is the uniform distribution on $[0, \pi]$.
 
 <img src="Example pictures/Example.png" alt="" width="300px"/>
 
