@@ -10,7 +10,9 @@ Simulation of random tesselation **ST**able by **IT**eration introduced by Nagel
 ## Supported distributions for angles
 
 The lines cuting the polygons are defined as
-$$D_{\rho, \theta}=\{(x,y)\in\R^2,~x\cos(\theta)+y\sin(\theta)=\rho\},~\rho\in\R,~\theta\in[0,\pi[.$$
+```math
+D_{\rho, \theta}=\{(x,y)\in\R^2,~x\cos(\theta)+y\sin(\theta)=\rho\},~\rho\in\R,~\theta\in[0,\pi[.
+```
 The parameter $\rho$ is always chosen uniformly but various distributions for $\theta$ are supported using the "Dist" parameter.
 
 ### Uniform
